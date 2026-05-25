@@ -15,7 +15,7 @@ INFECTED = 2
 RECOVERED = 3
 DEAD = 4
 
-GRID_SIZE = 120
+GRID_SIZE = 80
 
 # =====================================================
 # ВИРУСЫ
@@ -50,7 +50,7 @@ current_virus = "COVID-19"
 # ПАРАМЕТРЫ
 # =====================================================
 
-movement_probability = 0.8
+movement_probability = 0.2
 population_density = 0.75
 initial_infected = 10
 
@@ -330,23 +330,21 @@ def restart(_):
     global simulation_finished
 
     population_density = slider_density.val
-
     grid = create_grid()
-
     healthy_history = []
     infected_history = []
     recovered_history = []
     dead_history = []
-
     simulation_finished = False
-
     end_text.set_text("")
-
     img.set_array(grid)
-
     stats_text.set_text("")
 
-    ax2.clear()
+    if paused:
+        button_pause.label.set_text("Resume")
+    else:
+        button_pause.label.set_text("Pause")
+
 
 button_reset.on_clicked(restart)
 
@@ -435,13 +433,28 @@ def spread_infection(current_grid):
 # ОБНОВЛЕНИЕ
 # =====================================================
 
+healthy_line, = ax2.plot([], [], label="Healthy", color="green")
+infected_line, = ax2.plot([], [], label="Infected", color="red")
+recovered_line, = ax2.plot([], [], label="Recovered", color="blue")
+dead_line, = ax2.plot([], [], label="Dead", color="black")
+
+ax2.set_title("Statistics")
+ax2.set_xlabel("Step")
+ax2.set_ylabel("Population")
+
+ax2.legend()
+
+frame_counter = 0
+
 def update(_):
+    global frame_counter
+    frame_counter += 1
 
     global grid
     global paused
     global simulation_finished
 
-    if paused:
+    if not paused:
         grid = move_people(grid)
         grid = spread_infection(grid)
 
@@ -482,31 +495,25 @@ def update(_):
 
     img.set_array(grid)
 
-    ax2.clear()
-
-    ax2.plot(
-        healthy_history,
-        label="Healthy",
-        color="green"
-    )
-
-    ax2.plot(
-        infected_history,
-        label="Infected",
-        color="red"
-    )
-
-    ax2.plot(
-        recovered_history,
-        label="Recovered",
-        color="blue"
-    )
-
-    ax2.plot(
-        dead_history,
-        label="Dead",
-        color="black"
-    )
+    if frame_counter % 5 == 0:
+        healthy_line.set_data(
+            range(len(healthy_history)),
+            healthy_history
+        )
+        infected_line.set_data(
+            range(len(infected_history)),
+            infected_history
+        )
+        recovered_line.set_data(
+            range(len(recovered_history)),
+            recovered_history
+        )
+        dead_line.set_data(
+            range(len(dead_history)),
+            dead_history
+        )
+        ax2.relim()
+        ax2.autoscale_view()
 
     ax2.set_title("Statistics")
     ax2.set_xlabel("Step")
@@ -554,7 +561,7 @@ fig.canvas.mpl_connect(
 animation = FuncAnimation(
     fig,
     update,
-    interval=50,
+    interval=100,
     cache_frame_data=False
 )
 
