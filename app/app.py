@@ -107,11 +107,11 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 9))
 plt.subplots_adjust(left=0.08, bottom=0.38, right=0.82)
 
 colors = [
-    "white",      # EMPTY
-    "green",      # HEALTHY
-    "red",        # INFECTED
-    "blue",       # RECOVERED
-    "black"       # DEAD
+    "lightgray",
+    "green",
+    "red",
+    "blue",
+    "black"
 ]
 
 cmap = ListedColormap(colors)
@@ -298,7 +298,7 @@ button_defaults.on_clicked(reset_defaults)
 # =====================================================
 
 def restart(event):
-
+    global paused
     global grid
     global healthy_history
     global infected_history
@@ -315,6 +315,8 @@ def restart(event):
     recovered_history = []
     dead_history = []
 
+    paused = False
+    button_pause.label.set_text("Pause")
 
 button_reset.on_clicked(restart)
 
@@ -502,8 +504,7 @@ def on_click(event: Event) -> None:
         0 <= y < GRID_SIZE
     ):
 
-        if grid[x, y] == HEALTHY:
-            grid[x, y] = INFECTED
+        grid[x, y] = INFECTED
 
 
 fig.canvas.mpl_connect(
