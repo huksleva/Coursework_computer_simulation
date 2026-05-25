@@ -55,6 +55,7 @@ population_density = 0.75
 initial_infected = 10
 
 paused = False
+simulation_finished = False
 
 manual_infection_mode = False
 
@@ -74,12 +75,17 @@ def create_grid():
 
     healthy_positions = np.argwhere(current_grid == HEALTHY)
 
-    for _ in range(initial_infected):
+    infected_count = min(initial_infected, len(healthy_positions))
 
-        if len(healthy_positions) == 0:
-            break
+    selected = np.atleast_1d(
+        np.random.choice(
+            len(healthy_positions),
+            infected_count,
+            replace=False
+        )
+    )
 
-        index = np.random.randint(0, len(healthy_positions))
+    for index in selected:
         x, y = healthy_positions[index]
 
         current_grid[x, y] = INFECTED
@@ -116,7 +122,13 @@ colors = [
 
 cmap = ListedColormap(colors)
 
-img = ax1.imshow(grid, cmap=cmap, vmin=0, vmax=4)
+img = ax1.imshow(
+    grid,
+    cmap=cmap,
+    vmin=0,
+    vmax=4,
+    interpolation="nearest"
+)
 
 ax1.set_title("Epidemic Simulation")
 ax1.set_xticks([])
@@ -142,6 +154,16 @@ stats_text = stats_ax.text(
     transform=stats_ax.transAxes,
     fontsize=10,
     verticalalignment="top"
+)
+
+end_text = fig.text(
+    0.5,
+    0.95,
+    "",
+    ha="center",
+    fontsize=18,
+    color="darkred",
+    weight="bold"
 )
 
 # =====================================================
@@ -258,7 +280,7 @@ radio.on_clicked(change_virus)
 # ПАУЗА
 # =====================================================
 
-def toggle_pause(event):
+def toggle_pause(_):
 
     global paused
 
@@ -276,7 +298,7 @@ button_pause.on_clicked(toggle_pause)
 # СБРОС ПАРАМЕТРОВ
 # =====================================================
 
-def reset_defaults(event):
+def reset_defaults(_):
 
     virus = VIRUSES[current_virus]
 
@@ -297,14 +319,15 @@ button_defaults.on_clicked(reset_defaults)
 # ПЕРЕЗАПУСК
 # =====================================================
 
-def restart(event):
-    global paused
+def restart(_):
+
     global grid
     global healthy_history
     global infected_history
     global recovered_history
     global dead_history
     global population_density
+    global simulation_finished
 
     population_density = slider_density.val
 
@@ -315,8 +338,15 @@ def restart(event):
     recovered_history = []
     dead_history = []
 
-    paused = False
-    button_pause.label.set_text("Pause")
+    simulation_finished = False
+
+    end_text.set_text("")
+
+    img.set_array(grid)
+
+    stats_text.set_text("")
+
+    ax2.clear()
 
 button_reset.on_clicked(restart)
 
@@ -405,19 +435,31 @@ def spread_infection(current_grid):
 # ОБНОВЛЕНИЕ
 # =====================================================
 
-def update(frame):
+def update(_):
 
     global grid
+    global paused
+    global simulation_finished
 
     if paused:
-        return [img]
-
-    grid = move_people(grid)
-
-    grid = spread_infection(grid)
+        grid = move_people(grid)
+        grid = spread_infection(grid)
 
     healthy = np.sum(grid == HEALTHY)
     infected = np.sum(grid == INFECTED)
+
+    global simulation_finished
+    global paused
+
+    if infected == 0 and not simulation_finished:
+        simulation_finished = True
+
+        paused = True
+
+        button_pause.label.set_text("Resume")
+
+        end_text.set_text("Epidemic ended")
+
     recovered = np.sum(grid == RECOVERED)
     dead = np.sum(grid == DEAD)
 
