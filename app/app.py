@@ -60,15 +60,15 @@ paused = False
 
 def create_grid():
 
-    grid = np.zeros((GRID_SIZE, GRID_SIZE), dtype=int)
+    current_grid = np.zeros((GRID_SIZE, GRID_SIZE), dtype=int)
 
     for x in range(GRID_SIZE):
         for y in range(GRID_SIZE):
 
             if np.random.random() < population_density:
-                grid[x, y] = HEALTHY
+                current_grid[x, y] = HEALTHY
 
-    healthy_positions = np.argwhere(grid == HEALTHY)
+    healthy_positions = np.argwhere(current_grid == HEALTHY)
 
     for _ in range(initial_infected):
 
@@ -78,9 +78,9 @@ def create_grid():
         index = np.random.randint(0, len(healthy_positions))
         x, y = healthy_positions[index]
 
-        grid[x, y] = INFECTED
+        current_grid[x, y] = INFECTED
 
-    return grid
+    return current_grid
 
 
 grid = create_grid()
