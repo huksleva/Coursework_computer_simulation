@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.widgets import Slider, Button, RadioButtons
+from matplotlib.colors import ListedColormap
+from matplotlib.backend_bases import Event
 
 # =====================================================
 # СОСТОЯНИЯ
@@ -54,6 +56,8 @@ initial_infected = 10
 
 paused = False
 
+manual_infection_mode = False
+
 # =====================================================
 # СОЗДАНИЕ СЕТКИ
 # =====================================================
@@ -102,13 +106,43 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 9))
 
 plt.subplots_adjust(left=0.08, bottom=0.38, right=0.82)
 
-cmap = plt.cm.get_cmap("viridis", 5)
+colors = [
+    "white",      # EMPTY
+    "green",      # HEALTHY
+    "red",        # INFECTED
+    "blue",       # RECOVERED
+    "black"       # DEAD
+]
+
+cmap = ListedColormap(colors)
 
 img = ax1.imshow(grid, cmap=cmap, vmin=0, vmax=4)
 
 ax1.set_title("Epidemic Simulation")
 ax1.set_xticks([])
 ax1.set_yticks([])
+
+# =====================================================
+# ПАНЕЛЬ СТАТИСТИКИ
+# =====================================================
+
+stats_ax = plt.axes((0.83, 0.72, 0.15, 0.18))
+
+stats_ax.set_facecolor("#f0f0f0")
+
+stats_ax.set_xticks([])
+stats_ax.set_yticks([])
+
+stats_ax.set_title("Statistics")
+
+stats_text = stats_ax.text(
+    0.05,
+    0.95,
+    "",
+    transform=stats_ax.transAxes,
+    fontsize=10,
+    verticalalignment="top"
+)
 
 # =====================================================
 # ПОЛЗУНКИ
@@ -169,10 +203,26 @@ slider_density = Slider(
 reset_ax = plt.axes((0.75, 0.26, 0.12, 0.05))
 pause_ax = plt.axes((0.75, 0.19, 0.12, 0.05))
 defaults_ax = plt.axes((0.75, 0.12, 0.12, 0.05))
+infect_ax = plt.axes((0.75, 0.05, 0.12, 0.05))
 
 button_reset = Button(reset_ax, "Restart")
 button_pause = Button(pause_ax, "Pause")
 button_defaults = Button(defaults_ax, "Defaults")
+button_infect = Button(infect_ax, "Add Infection")
+
+def toggle_infection_mode(_):
+
+    global manual_infection_mode
+
+    manual_infection_mode = not manual_infection_mode
+
+    if manual_infection_mode:
+        button_infect.label.set_text("Click Map")
+    else:
+        button_infect.label.set_text("Add Infection")
+
+
+button_infect.on_clicked(toggle_infection_mode)
 
 # =====================================================
 # ВЫБОР ВИРУСА
@@ -369,6 +419,21 @@ def update(frame):
     recovered = np.sum(grid == RECOVERED)
     dead = np.sum(grid == DEAD)
 
+    total_population = (
+            healthy +
+            infected +
+            recovered +
+            dead
+    )
+
+    stats_text.set_text(
+        f"Population: {total_population}\n"
+        f"Healthy: {healthy}\n"
+        f"Infected: {infected}\n"
+        f"Recovered: {recovered}\n"
+        f"Dead: {dead}"
+    )
+
     healthy_history.append(healthy)
     infected_history.append(infected)
     recovered_history.append(recovered)
@@ -378,10 +443,29 @@ def update(frame):
 
     ax2.clear()
 
-    ax2.plot(healthy_history, label="Healthy")
-    ax2.plot(infected_history, label="Infected")
-    ax2.plot(recovered_history, label="Recovered")
-    ax2.plot(dead_history, label="Dead")
+    ax2.plot(
+        healthy_history,
+        label="Healthy",
+        color="green"
+    )
+
+    ax2.plot(
+        infected_history,
+        label="Infected",
+        color="red"
+    )
+
+    ax2.plot(
+        recovered_history,
+        label="Recovered",
+        color="blue"
+    )
+
+    ax2.plot(
+        dead_history,
+        label="Dead",
+        color="black"
+    )
 
     ax2.set_title("Statistics")
     ax2.set_xlabel("Step")
@@ -396,6 +480,36 @@ def update(frame):
 # =====================================================
 # АНИМАЦИЯ
 # =====================================================
+
+def on_click(event: Event) -> None:
+
+    global grid
+
+    if not manual_infection_mode:
+        return
+
+    if event.inaxes != ax1:
+        return
+
+    if event.xdata is None or event.ydata is None:
+        return
+
+    x = int(event.ydata)
+    y = int(event.xdata)
+
+    if (
+        0 <= x < GRID_SIZE and
+        0 <= y < GRID_SIZE
+    ):
+
+        if grid[x, y] == HEALTHY:
+            grid[x, y] = INFECTED
+
+
+fig.canvas.mpl_connect(
+    "button_press_event",
+    on_click
+)
 
 animation = FuncAnimation(
     fig,
