@@ -448,9 +448,6 @@ def update(_):
     healthy = np.sum(grid == HEALTHY)
     infected = np.sum(grid == INFECTED)
 
-    global simulation_finished
-    global paused
-
     if infected == 0 and not simulation_finished:
         simulation_finished = True
 
