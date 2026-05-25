@@ -1,0 +1,30 @@
+[project]
+name = "sir-epidemic-model"
+version = "1.0.0"
+description = "Computer simulation of epidemic spread using the SIR model and cellular automata"
+authors = [
+    { name = "Тоц Леонид Александрович" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "numpy>=2.0.0",
+    "matplotlib>=3.9.0"
+]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pyright]
+typeCheckingMode = "basic"
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.black]
+line-length = 88
