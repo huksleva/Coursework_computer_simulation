@@ -441,7 +441,6 @@ dead_line, = ax2.plot([], [], label="Dead", color="black")
 ax2.set_title("Statistics")
 ax2.set_xlabel("Step")
 ax2.set_ylabel("Population")
-
 ax2.legend()
 
 frame_counter = 0
@@ -488,10 +487,11 @@ def update(_):
         f"Dead: {dead}"
     )
 
-    healthy_history.append(healthy)
-    infected_history.append(infected)
-    recovered_history.append(recovered)
-    dead_history.append(dead)
+    if frame_counter % 2 == 0:
+        healthy_history.append(healthy)
+        infected_history.append(infected)
+        recovered_history.append(recovered)
+        dead_history.append(dead)
 
     img.set_array(grid)
 
@@ -512,18 +512,22 @@ def update(_):
             range(len(dead_history)),
             dead_history
         )
-        ax2.relim()
-        ax2.autoscale_view()
-
-    ax2.set_title("Statistics")
-    ax2.set_xlabel("Step")
-    ax2.set_ylabel("Population")
-
-    ax2.legend()
+        ax2.set_xlim(
+            max(0, len(healthy_history) - 500),
+            len(healthy_history) + 10
+        )
+        ax2.set_ylim(0, GRID_SIZE * GRID_SIZE)
 
     animation.event_source.interval = 201 - slider_speed.val
 
-    return [img]
+    return [
+        img,
+        healthy_line,
+        infected_line,
+        recovered_line,
+        dead_line,
+        stats_text
+    ]
 
 # =====================================================
 # АНИМАЦИЯ
