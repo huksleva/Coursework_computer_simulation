@@ -17,6 +17,9 @@ dependencies = [
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+packages = ["app"]
+
 [tool.pyright]
 typeCheckingMode = "basic"
 
