@@ -113,6 +113,8 @@ dead_history = []
 # =====================================================
 
 fig = plt.figure(figsize=(16, 9))
+manager = plt.get_current_fig_manager()
+manager.window.wm_geometry("+0+0")
 gs = GridSpec(
     8,
     12,
@@ -124,7 +126,9 @@ gs.update(
 )
 
 ax1 = fig.add_subplot(gs[0:6, 0:6])
-ax2 = fig.add_subplot(gs[0:6, 6:10])
+ax1.set_position([0, 0.29, 0.38, 0.60])
+ax2 = fig.add_subplot(gs[0:6, 4:10])
+ax2.set_position([0.48, 0.25, 0.35, 0.60])
 
 colors = [
     "lightgray",
@@ -309,15 +313,14 @@ radio.on_clicked(change_virus)
 # =====================================================
 
 def toggle_pause(_):
-
     global paused
-
     paused = not paused
-
     if paused:
         button_pause.label.set_text("Resume")
+        animation.event_source.stop()
     else:
         button_pause.label.set_text("Pause")
+        animation.event_source.start()
 
 
 button_pause.on_clicked(toggle_pause)
@@ -359,14 +362,20 @@ def restart(_):
 
     population_density = slider_density.val
     grid = create_grid()
+
     healthy_history = []
     infected_history = []
     recovered_history = []
     dead_history = []
+
     simulation_finished = False
     end_text.set_text("")
-    img.set_array(grid)
     stats_text.set_text("")
+
+    img.set_array(grid)
+
+    # 🔥 важно: принудительно обновить экран
+    fig.canvas.draw_idle()
 
     if paused:
         button_pause.label.set_text("Resume")
@@ -472,35 +481,67 @@ ax2.legend()
 frame_counter = 0
 
 def update(_):
-    global frame_counter
-    frame_counter += 1
 
+    global frame_counter
     global grid
     global paused
     global simulation_finished
 
-    if not paused:
-        grid = move_people(grid)
-        grid = spread_infection(grid)
+    # =====================================================
+    # ПАУЗА
+    # =====================================================
+
+    if paused:
+        return [
+            img,
+            healthy_line,
+            infected_line,
+            recovered_line,
+            dead_line,
+            stats_text
+        ]
+
+    frame_counter += 1
+
+    # =====================================================
+    # ОБНОВЛЕНИЕ СИМУЛЯЦИИ
+    # =====================================================
+
+    grid = move_people(grid)
+    grid = spread_infection(grid)
+
+    # =====================================================
+    # ПОДСЧЁТ СОСТОЯНИЙ
+    # =====================================================
 
     healthy = np.sum(grid == HEALTHY)
     infected = np.sum(grid == INFECTED)
-
-    if infected == 0 and not simulation_finished:
-        simulation_finished = True
-        paused = True
-        button_pause.label.set_text("Resume")
-        end_text.set_text("Epidemic ended")
-
     recovered = np.sum(grid == RECOVERED)
     dead = np.sum(grid == DEAD)
 
     total_population = (
-            healthy +
-            infected +
-            recovered +
-            dead
+        healthy +
+        infected +
+        recovered +
+        dead
     )
+
+    # =====================================================
+    # ЗАВЕРШЕНИЕ ЭПИДЕМИИ
+    # =====================================================
+
+    if infected == 0 and not simulation_finished:
+
+        simulation_finished = True
+        paused = True
+
+        button_pause.label.set_text("Resume")
+
+        end_text.set_text("Epidemic ended")
+
+    # =====================================================
+    # ОБНОВЛЕНИЕ ТЕКСТОВОЙ СТАТИСТИКИ
+    # =====================================================
 
     stats_text.set_text(
         f"Population: {total_population}\n"
@@ -510,38 +551,70 @@ def update(_):
         f"Dead: {dead}"
     )
 
+    # =====================================================
+    # СОХРАНЕНИЕ ИСТОРИИ
+    # =====================================================
+
     if frame_counter % 2 == 0:
+
         healthy_history.append(healthy)
         infected_history.append(infected)
         recovered_history.append(recovered)
         dead_history.append(dead)
 
+    # =====================================================
+    # ОБНОВЛЕНИЕ КАРТЫ
+    # =====================================================
+
     img.set_array(grid)
 
+    # =====================================================
+    # ОБНОВЛЕНИЕ ГРАФИКА
+    # =====================================================
+
     if frame_counter % 5 == 0:
+
         healthy_line.set_data(
             range(len(healthy_history)),
             healthy_history
         )
+
         infected_line.set_data(
             range(len(infected_history)),
             infected_history
         )
+
         recovered_line.set_data(
             range(len(recovered_history)),
             recovered_history
         )
+
         dead_line.set_data(
             range(len(dead_history)),
             dead_history
         )
+
         ax2.set_xlim(
             max(0, len(healthy_history) - 500),
             len(healthy_history) + 10
         )
-        ax2.set_ylim(0, GRID_SIZE * GRID_SIZE)
 
-    animation.event_source.interval = 201 - slider_speed.val
+        ax2.set_ylim(
+            0,
+            GRID_SIZE * GRID_SIZE
+        )
+
+    # =====================================================
+    # СКОРОСТЬ АНИМАЦИИ
+    # =====================================================
+
+    animation.event_source.interval = (
+        201 - slider_speed.val
+    )
+
+    # =====================================================
+    # ВОЗВРАТ ОБЪЕКТОВ
+    # =====================================================
 
     return [
         img,
@@ -562,22 +635,18 @@ def on_click(event: Event) -> None:
 
     if not manual_infection_mode:
         return
-
     if event.inaxes != ax1:
         return
-
     if event.xdata is None or event.ydata is None:
         return
 
     x = int(event.ydata)
     y = int(event.xdata)
 
-    if (
-        0 <= x < GRID_SIZE and
-        0 <= y < GRID_SIZE
-    ):
-
+    if (0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE):
         grid[x, y] = INFECTED
+        img.set_array(grid)
+        fig.canvas.draw_idle()
 
 
 fig.canvas.mpl_connect(
@@ -595,5 +664,108 @@ animation = FuncAnimation(
 # =====================================================
 # ЗАПУСК
 # =====================================================
+
+drag_data = {
+    "ax": None,
+    "x": 0,
+    "y": 0
+}
+
+draggable_axes = [
+    ax1,
+    ax2,
+    stats_ax,
+    radio_ax,
+    ax_infection,
+    ax_recovery,
+    ax_death,
+    ax_speed,
+    ax_density,
+    reset_ax,
+    pause_ax,
+    defaults_ax,
+    infect_ax
+]
+
+
+def on_press(event):
+
+    if event.inaxes is None:
+        return
+
+    if event.button != 1:
+        return
+
+    for ax in draggable_axes:
+
+        if ax == event.inaxes:
+
+            drag_data["ax"] = ax
+            drag_data["x"] = event.x
+            drag_data["y"] = event.y
+
+            break
+
+
+def on_motion(event):
+
+    ax = drag_data["ax"]
+
+    if ax is None:
+        return
+
+    dx = (event.x - drag_data["x"]) / fig.bbox.width
+    dy = (event.y - drag_data["y"]) / fig.bbox.height
+
+    pos = ax.get_position()
+
+    ax.set_position([
+        pos.x0 + dx,
+        pos.y0 + dy,
+        pos.width,
+        pos.height
+    ])
+
+    drag_data["x"] = event.x
+    drag_data["y"] = event.y
+
+    fig.canvas.draw_idle()
+
+
+def on_release(event):
+
+    ax = drag_data["ax"]
+
+    if ax is not None:
+
+        pos = ax.get_position()
+
+        print(
+            f"{ax.get_label()}:\n"
+            f"[{pos.x0:.3f}, "
+            f"{pos.y0:.3f}, "
+            f"{pos.width:.3f}, "
+            f"{pos.height:.3f}]"
+        )
+
+    drag_data["ax"] = None
+
+
+fig.canvas.mpl_connect(
+    "button_press_event",
+    on_press
+)
+
+fig.canvas.mpl_connect(
+    "motion_notify_event",
+    on_motion
+)
+
+fig.canvas.mpl_connect(
+    "button_release_event",
+    on_release
+)
+
+
 
 plt.show()
