@@ -362,9 +362,7 @@ def move_people(current_grid):
             state = current_grid[x, y]
 
             if state in [HEALTHY, INFECTED, RECOVERED]:
-
                 if np.random.random() < movement_probability:
-
                     dx = np.random.randint(-1, 2)
                     dy = np.random.randint(-1, 2)
 
