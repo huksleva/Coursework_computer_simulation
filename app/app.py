@@ -4,6 +4,10 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.widgets import Slider, Button, RadioButtons
 from matplotlib.colors import ListedColormap
 from matplotlib.backend_bases import Event
+from matplotlib.gridspec import (
+    GridSpec,
+    GridSpecFromSubplotSpec
+)
 
 # =====================================================
 # СОСТОЯНИЯ
@@ -15,7 +19,7 @@ INFECTED = 2
 RECOVERED = 3
 DEAD = 4
 
-GRID_SIZE = 80
+GRID_SIZE = 120
 
 # =====================================================
 # ВИРУСЫ
@@ -108,9 +112,19 @@ dead_history = []
 # ОКНО
 # =====================================================
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 9))
+fig = plt.figure(figsize=(16, 9))
+gs = GridSpec(
+    8,
+    12,
+    figure=fig
+)
+gs.update(
+    wspace=0.6,
+    hspace=1.2
+)
 
-plt.subplots_adjust(left=0.08, bottom=0.38, right=0.82)
+ax1 = fig.add_subplot(gs[0:6, 0:6])
+ax2 = fig.add_subplot(gs[0:6, 6:10])
 
 colors = [
     "lightgray",
@@ -138,7 +152,7 @@ ax1.set_yticks([])
 # ПАНЕЛЬ СТАТИСТИКИ
 # =====================================================
 
-stats_ax = plt.axes((0.83, 0.72, 0.15, 0.18))
+stats_ax = fig.add_subplot(gs[0:2, 10:12])
 
 stats_ax.set_facecolor("#f0f0f0")
 
@@ -170,12 +184,22 @@ end_text = fig.text(
 # ПОЛЗУНКИ
 # =====================================================
 
-ax_infection = plt.axes((0.15, 0.28, 0.55, 0.03))
-ax_recovery = plt.axes((0.15, 0.23, 0.55, 0.03))
-ax_death = plt.axes((0.15, 0.18, 0.55, 0.03))
-ax_speed = plt.axes((0.15, 0.13, 0.55, 0.03))
-ax_density = plt.axes((0.15, 0.08, 0.55, 0.03))
+# Слайдеры
+slider_spec = gs[6:8, 0:10]
 
+slider_grid = GridSpecFromSubplotSpec(
+    2,
+    3,
+    subplot_spec=slider_spec,
+    wspace=0.5,
+    hspace=1.0
+)
+
+ax_infection = fig.add_subplot(slider_grid[0, 0])
+ax_recovery = fig.add_subplot(slider_grid[0, 1])
+ax_death = fig.add_subplot(slider_grid[0, 2])
+ax_speed = fig.add_subplot(slider_grid[1, 0])
+ax_density = fig.add_subplot(slider_grid[1, 1])
 virus_data = VIRUSES[current_virus]
 
 slider_infection = Slider(
@@ -222,10 +246,14 @@ slider_density = Slider(
 # КНОПКИ
 # =====================================================
 
-reset_ax = plt.axes((0.75, 0.26, 0.12, 0.05))
-pause_ax = plt.axes((0.75, 0.19, 0.12, 0.05))
-defaults_ax = plt.axes((0.75, 0.12, 0.12, 0.05))
-infect_ax = plt.axes((0.75, 0.05, 0.12, 0.05))
+reset_ax = fig.add_subplot(gs[2, 10:12])
+pause_ax = fig.add_subplot(gs[3, 10:12])
+defaults_ax = fig.add_subplot(gs[4, 10:12])
+infect_ax = fig.add_subplot(gs[5, 10:12])
+
+for ax in [reset_ax, pause_ax, defaults_ax, infect_ax]:
+    ax.set_xticks([])
+    ax.set_yticks([])
 
 button_reset = Button(reset_ax, "Restart")
 button_pause = Button(pause_ax, "Pause")
@@ -250,7 +278,7 @@ button_infect.on_clicked(toggle_infection_mode)
 # ВЫБОР ВИРУСА
 # =====================================================
 
-radio_ax = plt.axes((0.83, 0.45, 0.14, 0.2))
+radio_ax = plt.axes((0.83, 0.11, 0.14, 0.14))
 
 radio = RadioButtons(
     radio_ax,
@@ -460,11 +488,8 @@ def update(_):
 
     if infected == 0 and not simulation_finished:
         simulation_finished = True
-
         paused = True
-
         button_pause.label.set_text("Resume")
-
         end_text.set_text("Epidemic ended")
 
     recovered = np.sum(grid == RECOVERED)
