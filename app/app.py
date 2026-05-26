@@ -8,6 +8,14 @@ from matplotlib.gridspec import (
     GridSpec,
     GridSpecFromSubplotSpec
 )
+from app.templates.createGrid import create_grid
+from app.templates.buttons_func import (
+    toggle_pause,
+    toggle_infection_mode
+)
+
+
+
 
 # =====================================================
 # СОСТОЯНИЯ
@@ -66,36 +74,6 @@ manual_infection_mode = False
 # =====================================================
 # СОЗДАНИЕ СЕТКИ
 # =====================================================
-
-def create_grid():
-
-    current_grid = np.zeros((GRID_SIZE, GRID_SIZE), dtype=int)
-
-    for x in range(GRID_SIZE):
-        for y in range(GRID_SIZE):
-
-            if np.random.random() < population_density:
-                current_grid[x, y] = HEALTHY
-
-    healthy_positions = np.argwhere(current_grid == HEALTHY)
-
-    infected_count = min(initial_infected, len(healthy_positions))
-
-    selected = np.atleast_1d(
-        np.random.choice(
-            len(healthy_positions),
-            infected_count,
-            replace=False
-        )
-    )
-
-    for index in selected:
-        x, y = healthy_positions[index]
-
-        current_grid[x, y] = INFECTED
-
-    return current_grid
-
 
 grid = create_grid()
 
@@ -204,7 +182,17 @@ ax_recovery = fig.add_subplot(slider_grid[0, 1])
 ax_death = fig.add_subplot(slider_grid[0, 2])
 ax_speed = fig.add_subplot(slider_grid[1, 0])
 ax_density = fig.add_subplot(slider_grid[1, 1])
+ax_infected = fig.add_subplot(slider_grid[1, 2])
 virus_data = VIRUSES[current_virus]
+
+slider_infected = Slider(
+    ax_infected,
+    "Init Infected",
+    1,
+    200,
+    valinit=10,
+    valstep=1
+)
 
 slider_infection = Slider(
     ax_infection,
@@ -263,20 +251,7 @@ button_reset = Button(reset_ax, "Restart")
 button_pause = Button(pause_ax, "Pause")
 button_defaults = Button(defaults_ax, "Defaults")
 button_infect = Button(infect_ax, "Add Infection")
-
-def toggle_infection_mode(_):
-
-    global manual_infection_mode
-
-    manual_infection_mode = not manual_infection_mode
-
-    if manual_infection_mode:
-        button_infect.label.set_text("Click Map")
-    else:
-        button_infect.label.set_text("Add Infection")
-
-
-button_infect.on_clicked(toggle_infection_mode)
+button_infect.on_clicked(toggle_infection_mode(manual_infection_mode))
 
 # =====================================================
 # ВЫБОР ВИРУСА
@@ -312,18 +287,7 @@ radio.on_clicked(change_virus)
 # ПАУЗА
 # =====================================================
 
-def toggle_pause(_):
-    global paused
-    paused = not paused
-    if paused:
-        button_pause.label.set_text("Resume")
-        animation.event_source.stop()
-    else:
-        button_pause.label.set_text("Pause")
-        animation.event_source.start()
-
-
-button_pause.on_clicked(toggle_pause)
+button_pause.on_clicked(toggle_pause(paused))
 
 # =====================================================
 # СБРОС ПАРАМЕТРОВ
@@ -677,6 +641,7 @@ draggable_axes = [
     stats_ax,
     radio_ax,
     ax_infection,
+    ax_infected,
     ax_recovery,
     ax_death,
     ax_speed,
