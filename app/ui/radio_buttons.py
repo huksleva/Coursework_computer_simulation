@@ -20,7 +20,7 @@ def create_radio_buttons():
     import matplotlib.pyplot as plt
 
     radio_ax = plt.axes(
-        (0.83, 0.11, 0.14, 0.14)
+        (0.804, 0.662, 0.140, 0.140)
     )
 
     radio = RadioButtons(

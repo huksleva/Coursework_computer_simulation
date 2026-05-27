@@ -54,7 +54,7 @@ def create_window(
     )
 
     simulation_ax.set_position(
-        (0, 0.29, 0.38, 0.60)
+        (0.014, 0.361, 0.314, 0.600)
     )
 
     graph_ax = figure.add_subplot(
@@ -62,7 +62,7 @@ def create_window(
     )
 
     graph_ax.set_position(
-        (0.48, 0.25, 0.35, 0.60)
+        (0.416, 0.364, 0.350, 0.600)
     )
 
     color_map = ListedColormap(colors)
