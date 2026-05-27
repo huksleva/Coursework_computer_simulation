@@ -37,6 +37,7 @@ from app.config import (
     VIRUSES,
     CURRENT_VIRUS,
     COLORS,
+    ENABLE_DRAGGING,
 )
 
 # =====================================================
@@ -218,6 +219,17 @@ ax2.set_ylabel("Population")
 ax2.legend()
 
 # =====================================================
+# SAVE GRAPH LINES TO STATE
+# =====================================================
+
+graph_lines = {
+    "healthy_line": healthy_line,
+    "infected_line": infected_line,
+    "recovered_line": recovered_line,
+    "dead_line": dead_line,
+}
+
+# =====================================================
 # RADIO BUTTONS
 # =====================================================
 
@@ -351,6 +363,15 @@ state = {
     "stats_text": stats_text,
 
     "end_text": end_text,
+
+    # =================================================
+    # GRAPH LINES
+    # =================================================
+
+    "healthy_line": healthy_line,
+    "infected_line": infected_line,
+    "recovered_line": recovered_line,
+    "dead_line": dead_line,
 }
 
 # =====================================================
@@ -453,32 +474,34 @@ state["draggable_axes"] = draggable_axes
 # DRAG EVENTS
 # =====================================================
 
-fig.canvas.mpl_connect(
-    "button_press_event",
+if ENABLE_DRAGGING:
 
-    lambda event: on_press(
-        event,
-        state,
+    fig.canvas.mpl_connect(
+        "button_press_event",
+
+        lambda event: on_press(
+            event,
+            state,
+        )
     )
-)
 
-fig.canvas.mpl_connect(
-    "motion_notify_event",
+    fig.canvas.mpl_connect(
+        "motion_notify_event",
 
-    lambda event: on_motion(
-        event,
-        state,
+        lambda event: on_motion(
+            event,
+            state,
+        )
     )
-)
 
-fig.canvas.mpl_connect(
-    "button_release_event",
+    fig.canvas.mpl_connect(
+        "button_release_event",
 
-    lambda event: on_release(
-        event,
-        state,
+        lambda event: on_release(
+            event,
+            state,
+        )
     )
-)
 
 # =====================================================
 # UPDATE FUNCTION

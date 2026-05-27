@@ -36,6 +36,7 @@ INITIAL_INFECTED = 10
 PAUSED = False
 SIMULATION_FINISHED = False
 MANUAL_INFECTION_MODE = False
+ENABLE_DRAGGING = False
 
 # =====================================================
 # VIRUS PRESETS

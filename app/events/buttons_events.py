@@ -97,6 +97,15 @@ def restart(_, state):
     state["recovered_history"].clear()
     state["dead_history"].clear()
 
+    # =====================================================
+    # CLEAR GRAPH
+    # =====================================================
+
+    state["healthy_line"].set_data([], [])
+    state["infected_line"].set_data([], [])
+    state["recovered_line"].set_data([], [])
+    state["dead_line"].set_data([], [])
+
     state["simulation_finished"] = False
 
     state["end_text"].set_text("")
