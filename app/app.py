@@ -104,9 +104,9 @@ gs.update(
 )
 
 ax1 = fig.add_subplot(gs[0:6, 0:6])
-ax1.set_position([0, 0.29, 0.38, 0.60])
+ax1.set_position((0, 0.29, 0.38, 0.60))
 ax2 = fig.add_subplot(gs[0:6, 4:10])
-ax2.set_position([0.48, 0.25, 0.35, 0.60])
+ax2.set_position((0.48, 0.25, 0.35, 0.60))
 
 colors = [
     "lightgray",
@@ -607,7 +607,7 @@ def on_click(event: Event) -> None:
     x = int(event.ydata)
     y = int(event.xdata)
 
-    if (0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE):
+    if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE:
         grid[x, y] = INFECTED
         img.set_array(grid)
         fig.canvas.draw_idle()
