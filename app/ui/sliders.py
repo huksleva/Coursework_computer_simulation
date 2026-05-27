@@ -7,6 +7,15 @@ for creating simulation sliders.
 
 from matplotlib.widgets import Slider
 
+from app.ui.layout import (
+    INFECTED_SLIDER_POSITION,
+    INFECTION_SLIDER_POSITION,
+    RECOVERY_SLIDER_POSITION,
+    DEATH_SLIDER_POSITION,
+    SPEED_SLIDER_POSITION,
+    DENSITY_SLIDER_POSITION,
+)
+
 
 def create_sliders(
     figure,
@@ -62,6 +71,13 @@ def create_sliders(
     ax_infected = figure.add_subplot(
         slider_grid[1, 2]
     )
+
+    ax_recovery.set_position(RECOVERY_SLIDER_POSITION)
+    ax_infection.set_position(INFECTION_SLIDER_POSITION)
+    ax_infected.set_position(INFECTED_SLIDER_POSITION)
+    ax_density.set_position(DENSITY_SLIDER_POSITION)
+    ax_speed.set_position(SPEED_SLIDER_POSITION)
+    ax_death.set_position(DEATH_SLIDER_POSITION)
 
     slider_infection = Slider(
         ax_infection,

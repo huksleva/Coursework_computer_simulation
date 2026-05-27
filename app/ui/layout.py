@@ -79,43 +79,43 @@ RADIO_POSITION = (
 
 
 INFECTION_SLIDER_POSITION = (
-    0.081,
+    0.080,
     0.148,
     0.160,
     0.050,
 )
 
 RECOVERY_SLIDER_POSITION = (
-    0.079,
+    0.080,
     0.104,
     0.160,
     0.050,
 )
 
 DEATH_SLIDER_POSITION = (
-    0.079,
+    0.080,
     0.059,
     0.160,
     0.050,
 )
 
 SPEED_SLIDER_POSITION = (
-    0.08,
-    0.12,
+    0.367,
+    0.148,
     0.16,
     0.05,
 )
 
 DENSITY_SLIDER_POSITION = (
-    0.32,
-    0.12,
+    0.367,
+    0.104,
     0.16,
     0.05,
 )
 
 INFECTED_SLIDER_POSITION = (
-    0.56,
-    0.12,
+    0.367,
+    0.059,
     0.16,
     0.05,
 )
