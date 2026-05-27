@@ -28,8 +28,7 @@ def create_radio_buttons():
         (
             "COVID-19",
             "Flu",
-            "Measles",
-            "Custom"
+            "Measles"
         )
     )
 

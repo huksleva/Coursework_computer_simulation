@@ -66,6 +66,7 @@ from app.ui.buttons import (
 
 from app.ui.radio_buttons import (
     create_radio_buttons,
+    change_virus,
 )
 
 from app.ui.statistics import (
@@ -222,6 +223,16 @@ ax2.legend()
 
 radio_ax, radio = create_radio_buttons()
 
+radio.on_clicked(
+    lambda label: change_virus(
+        label,
+        VIRUSES,
+        slider_infection,
+        slider_recovery,
+        slider_death,
+    )
+)
+
 # =====================================================
 # EVENTS
 # =====================================================
@@ -341,6 +352,20 @@ state = {
 
     "end_text": end_text,
 }
+
+# =====================================================
+# RADIO BUTTON EVENTS
+# =====================================================
+
+radio.on_clicked(
+    lambda label: change_virus(
+        label,
+        VIRUSES,
+        slider_infection,
+        slider_recovery,
+        slider_death,
+    )
+)
 
 # =====================================================
 # BUTTON EVENTS

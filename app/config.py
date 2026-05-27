@@ -58,12 +58,6 @@ VIRUSES = {
         "infection": 0.8,
         "recovery": 0.02,
         "death": 0.01,
-    },
-
-    "Custom": {
-        "infection": 0.35,
-        "recovery": 0.02,
-        "death": 0.005,
     }
 }
 
