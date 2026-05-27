@@ -550,6 +550,20 @@ def update(_):
     dead = statistics["dead"]
 
     # =================================================
+    # EPIDEMIC END
+    # =================================================
+
+    if infected == 0 and not state["simulation_finished"]:
+        state["simulation_finished"] = True
+        state["paused"] = True
+        button_pause.label.set_text(
+            "Resume"
+        )
+        end_text.set_text(
+            "Epidemic ended"
+        )
+
+    # =================================================
     # UPDATE TEXT
     # =================================================
 

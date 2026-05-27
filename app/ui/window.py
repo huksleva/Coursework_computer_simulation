@@ -10,6 +10,11 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from matplotlib.gridspec import GridSpec
 
+from app.ui.layout import (
+    MAP_POSITION,
+    GRAPH_POSITION,
+)
+
 
 def create_window(
     grid,
@@ -53,17 +58,13 @@ def create_window(
         grid_spec[0:6, 0:6]
     )
 
-    simulation_ax.set_position(
-        (0.014, 0.361, 0.314, 0.600)
-    )
+    simulation_ax.set_position(MAP_POSITION)
 
     graph_ax = figure.add_subplot(
         grid_spec[0:6, 4:10]
     )
 
-    graph_ax.set_position(
-        (0.416, 0.364, 0.350, 0.600)
-    )
+    graph_ax.set_position(GRAPH_POSITION)
 
     color_map = ListedColormap(colors)
 

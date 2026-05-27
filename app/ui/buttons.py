@@ -11,6 +11,13 @@ for the epidemic simulation interface.
 
 from matplotlib.widgets import Button
 
+from app.ui.layout import (
+    RESET_BUTTON_POSITION,
+    PAUSE_BUTTON_POSITION,
+    DEFAULTS_BUTTON_POSITION,
+    INFECT_BUTTON_POSITION,
+)
+
 # =====================================================
 # BUTTONS
 # =====================================================
@@ -48,21 +55,13 @@ def create_buttons(grid_spec, figure):
     # BUTTON POSITIONS
     # =====================================================
 
-    reset_ax.set_position(
-        [0.821, 0.584, 0.108, 0.047]
-    )
+    reset_ax.set_position(RESET_BUTTON_POSITION)
 
-    pause_ax.set_position(
-        [0.821, 0.514, 0.108, 0.047]
-    )
+    pause_ax.set_position(PAUSE_BUTTON_POSITION)
 
-    defaults_ax.set_position(
-        [0.821, 0.443, 0.108, 0.047]
-    )
+    defaults_ax.set_position(DEFAULTS_BUTTON_POSITION)
 
-    infect_ax.set_position(
-        [0.822, 0.371, 0.108, 0.047]
-    )
+    infect_ax.set_position(INFECT_BUTTON_POSITION)
 
     # =================================================
     # REMOVE TICKS

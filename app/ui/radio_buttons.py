@@ -7,6 +7,7 @@ for virus selection radio buttons.
 
 from matplotlib.widgets import RadioButtons
 
+from app.ui.layout import RADIO_POSITION
 
 def create_radio_buttons():
     """
@@ -19,9 +20,7 @@ def create_radio_buttons():
 
     import matplotlib.pyplot as plt
 
-    radio_ax = plt.axes(
-        (0.804, 0.662, 0.140, 0.140)
-    )
+    radio_ax = plt.axes(RADIO_POSITION)
 
     radio = RadioButtons(
         radio_ax,

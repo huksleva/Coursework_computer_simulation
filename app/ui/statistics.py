@@ -7,6 +7,7 @@ for creating and updating statistics.
 
 import numpy as np
 
+from app.ui.layout import STATS_POSITION
 
 def create_statistics_panel(
     figure,
@@ -32,9 +33,7 @@ def create_statistics_panel(
     stats_ax = figure.add_subplot(
         grid_spec[0:2, 10:12]
     )
-    stats_ax.set_position(
-        (0.804, 0.823, 0.140, 0.140)
-    )
+    stats_ax.set_position(STATS_POSITION)
 
     stats_ax.set_facecolor("#f0f0f0")
 
