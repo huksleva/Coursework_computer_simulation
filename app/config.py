@@ -27,7 +27,7 @@ GRID_SIZE = 120
 
 MOVEMENT_PROBABILITY = 0.2
 POPULATION_DENSITY = 0.75
-INITIAL_INFECTED = 10
+INITIAL_INFECTED = 1
 
 # =====================================================
 # SIMULATION FLAGS
@@ -44,21 +44,21 @@ ENABLE_DRAGGING = False
 
 VIRUSES = {
     "COVID-19": {
-        "infection": 0.45,
-        "recovery": 0.015,
-        "death": 0.003,
+        "infection": 0.18,
+        "recovery": 0.010,
+        "death": 0.0015,
     },
 
     "Flu": {
-        "infection": 0.25,
-        "recovery": 0.04,
-        "death": 0.0005,
+        "infection": 0.08,
+        "recovery": 0.025,
+        "death": 0.0002,
     },
 
     "Measles": {
-        "infection": 0.8,
-        "recovery": 0.02,
-        "death": 0.01,
+        "infection": 0.55,
+        "recovery": 0.008,
+        "death": 0.002,
     }
 }
 
