@@ -59,10 +59,12 @@ def create_grid(
         len(healthy_positions)
     )
 
-    selected = np.random.choice(
-        len(healthy_positions),
-        infected_count,
-        replace=False
+    selected = np.atleast_1d(
+        np.random.choice(
+            len(healthy_positions),
+            infected_count,
+            replace=False
+        )
     )
 
     for index in selected:

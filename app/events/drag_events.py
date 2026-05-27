@@ -64,7 +64,7 @@ def on_motion(event, state):
     fig.canvas.draw_idle()
 
 
-def on_release(event, state):
+def on_release(_, state):
     """
     Завершает перетаскивание элемента.
     """

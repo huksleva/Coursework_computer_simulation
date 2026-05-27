@@ -11,7 +11,7 @@
 from app.simulation.create_grid import create_grid
 
 
-def toggle_pause(event, state):
+def toggle_pause(_, state):
     """
     Переключает паузу симуляции.
     """
@@ -27,7 +27,7 @@ def toggle_pause(event, state):
         state["animation"].event_source.start()
 
 
-def toggle_infection_mode(event, state):
+def toggle_infection_mode(_, state):
     """
     Включает или выключает режим
     ручного заражения клеток.
@@ -44,7 +44,7 @@ def toggle_infection_mode(event, state):
         state["button_infect"].label.set_text("Add Infection")
 
 
-def reset_defaults(event, state):
+def reset_defaults(_, state):
     """
     Сбрасывает параметры симуляции
     к значениям вируса по умолчанию.
@@ -73,7 +73,7 @@ def reset_defaults(event, state):
     )
 
 
-def restart(event, state):
+def restart(_, state):
     """
     Полностью перезапускает симуляцию.
     """
@@ -85,11 +85,11 @@ def restart(event, state):
     state["grid"] = create_grid(
         grid_size=state["GRID_SIZE"],
         population_density=state["population_density"],
+        initial_infected=int(
+            state["slider_infected"].val
+        ),
         healthy_state=state["HEALTHY"],
         infected_state=state["INFECTED"],
-        infected_count=int(
-            state["slider_infected"].val
-        )
     )
 
     state["healthy_history"].clear()
