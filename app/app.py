@@ -10,13 +10,15 @@ and starts the animation loop.
 # IMPORTS
 # =====================================================
 
-import numpy as np
 import matplotlib.pyplot as plt
 
 from matplotlib.animation import FuncAnimation
 from matplotlib.gridspec import (
     GridSpecFromSubplotSpec
 )
+
+from typing import cast
+from numpy.typing import NDArray
 
 # =====================================================
 # CONFIG
@@ -64,7 +66,6 @@ from app.ui.buttons import (
 
 from app.ui.radio_buttons import (
     create_radio_buttons,
-    change_virus,
 )
 
 from app.ui.statistics import (
@@ -78,8 +79,6 @@ from app.ui.statistics import (
 # =====================================================
 
 from app.utils.helpers import (
-    clear_history,
-    reset_statistics_texts,
     update_simulation_image,
 )
 
@@ -456,6 +455,173 @@ fig.canvas.mpl_connect(
     )
 )
 
+# =====================================================
+# UPDATE FUNCTION
+# =====================================================
 
+frame_counter = 0
+
+
+def update(_):
+
+    global frame_counter
+
+    if state["paused"]:
+        return [
+            img,
+            healthy_line,
+            infected_line,
+            recovered_line,
+            dead_line,
+            stats_text,
+        ]
+
+    frame_counter += 1
+
+    # =================================================
+    # UPDATE SIMULATION
+    # =================================================
+
+    state["grid"] = move_people(
+        current_grid=state["grid"],
+        grid_size=GRID_SIZE,
+        movement_probability=MOVEMENT_PROBABILITY,
+        empty_state=EMPTY,
+        movable_states=[
+            HEALTHY,
+            INFECTED,
+            RECOVERED,
+        ],
+    )
+
+    state["grid"] = spread_infection(
+        current_grid=cast(NDArray, state["grid"]),
+        infection_probability=slider_infection.val,
+        recovery_probability=slider_recovery.val,
+        death_probability=slider_death.val,
+        healthy_state=HEALTHY,
+        infected_state=INFECTED,
+        recovered_state=RECOVERED,
+        dead_state=DEAD,
+        grid_size=GRID_SIZE,
+    )
+
+
+    # =================================================
+    # CALCULATE STATISTICS
+    # =================================================
+
+    statistics = calculate_statistics(
+        grid=cast(NDArray, state["grid"]),
+        healthy_state=HEALTHY,
+        infected_state=INFECTED,
+        recovered_state=RECOVERED,
+        dead_state=DEAD,
+    )
+
+    healthy = statistics["healthy"]
+    infected = statistics["infected"]
+    recovered = statistics["recovered"]
+    dead = statistics["dead"]
+
+    # =================================================
+    # UPDATE TEXT
+    # =================================================
+
+    update_statistics_text(
+        stats_text=stats_text,
+        healthy=healthy,
+        infected=infected,
+        recovered=recovered,
+        dead=dead,
+    )
+
+    # =================================================
+    # SAVE HISTORY
+    # =================================================
+
+    healthy_history.append(healthy)
+    infected_history.append(infected)
+    recovered_history.append(recovered)
+    dead_history.append(dead)
+
+    # =================================================
+    # UPDATE GRAPH
+    # =================================================
+
+    healthy_line.set_data(
+        range(len(healthy_history)),
+        healthy_history,
+    )
+
+    infected_line.set_data(
+        range(len(infected_history)),
+        infected_history,
+    )
+
+    recovered_line.set_data(
+        range(len(recovered_history)),
+        recovered_history,
+    )
+
+    dead_line.set_data(
+        range(len(dead_history)),
+        dead_history,
+    )
+
+    ax2.set_xlim(
+        0,
+        max(10, len(healthy_history))
+    )
+
+    ax2.set_ylim(
+        0,
+        GRID_SIZE * GRID_SIZE
+    )
+
+    # =================================================
+    # UPDATE IMAGE
+    # =================================================
+
+    update_simulation_image(
+        image=img,
+        grid=state["grid"],
+        figure=fig,
+    )
+
+    # =================================================
+    # ANIMATION SPEED
+    # =================================================
+
+    animation.event_source.interval = (
+        201 - slider_speed.val
+    )
+
+    return [
+        img,
+        healthy_line,
+        infected_line,
+        recovered_line,
+        dead_line,
+        stats_text,
+    ]
+
+
+# =====================================================
+# CREATE ANIMATION
+# =====================================================
+
+animation = FuncAnimation(
+    fig=fig,
+    func=update,
+    interval=100,
+    cache_frame_data=False,
+)
+
+state["animation"] = animation
+
+# =====================================================
+# START PROGRAM
+# =====================================================
 
 plt.show()

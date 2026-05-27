@@ -41,7 +41,7 @@ def reset_statistics_texts(
 def update_simulation_image(
     image,
     grid,
-    figure
+    figure,
 ):
     """
     Update simulation image

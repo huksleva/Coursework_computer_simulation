@@ -127,32 +127,23 @@ def calculate_statistics(
 
 def update_statistics_text(
     stats_text,
-    statistics
+    healthy,
+    infected,
+    recovered,
+    dead,
 ):
-    """
-    Update statistics text panel.
 
-    Args:
-        stats_text:
-            Matplotlib text object.
-
-        statistics (dict):
-            Simulation statistics.
-    """
+    total_population = (
+        healthy
+        + infected
+        + recovered
+        + dead
+    )
 
     stats_text.set_text(
-        f"Population: "
-        f"{statistics['total_population']}\n"
-
-        f"Healthy: "
-        f"{statistics['healthy']}\n"
-
-        f"Infected: "
-        f"{statistics['infected']}\n"
-
-        f"Recovered: "
-        f"{statistics['recovered']}\n"
-
-        f"Dead: "
-        f"{statistics['dead']}"
+        f"Population: {total_population}\n"
+        f"Healthy: {healthy}\n"
+        f"Infected: {infected}\n"
+        f"Recovered: {recovered}\n"
+        f"Dead: {dead}"
     )
