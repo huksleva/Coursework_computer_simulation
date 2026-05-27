@@ -144,8 +144,8 @@ def update_statistics_text(
 
     stats_text.set_text(
         f"Population: {total_population}\n"
-        f"Healthy: {healthy}\n"
-        f"Infected: {infected}\n"
-        f"Recovered: {recovered}\n"
-        f"Dead: {dead}"
+        f"Healthy: {healthy} - {round(healthy / total_population * 100)}%\n"
+        f"Infected: {infected} - {round(infected / total_population * 100)}%\n"
+        f"Recovered: {recovered} - {round(recovered / total_population * 100)}%\n"
+        f"Dead: {dead} - {round(dead / total_population * 100)}%"
     )
