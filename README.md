@@ -70,7 +70,7 @@ Coursework_computer_simulation/
 ### 1. Клонирование репозитория
 
 ```bash
-git clone <repository_url>
+git clone https://github.com/huksleva/Coursework_computer_simulation
 cd Coursework_computer_simulation
 ```
 
@@ -80,11 +80,6 @@ Windows:
 
 ```bash
 python -m venv .venv
-```
-
-Активация окружения:
-
-```bash
 .venv\Scripts\activate
 ```
 
@@ -97,13 +92,7 @@ source .venv/bin/activate
 
 ### 3. Установка зависимостей
 
-Если используется requirements.txt:
-
-```bash
-pip install -r requirements.txt
-```
-
-Если используется pyproject.toml:
+Используется pyproject.toml:
 
 ```bash
 pip install .
@@ -151,7 +140,6 @@ python app/app.py
 - COVID-19
 - Flu
 - Measles
-- Custom
 
 ## Автор
 
