@@ -37,7 +37,8 @@ def move_people(
                     nx = x + dx
                     ny = y + dy
 
-                    if (0 <= nx < grid_sizeand0 <= ny < grid_size and
+                    if (0 <= nx < grid_size and
+                            0 <= ny < grid_size and
                             new_grid[nx, ny] == empty_state):
 
                         new_grid[nx, ny] = state
