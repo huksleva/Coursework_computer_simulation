@@ -95,7 +95,7 @@ source .venv/bin/activate
 Используется pyproject.toml:
 
 ```bash
-pip install .
+python -m pip install .
 ```
 
 ## Запуск проекта
@@ -103,7 +103,7 @@ pip install .
 Из корневой директории проекта:
 
 ```bash
-python app/app.py
+python -m app/app.py
 ```
 
 ## Состояния агентов
